@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-2.1.4.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="scripts/jquery.signalr-2.2.0.js"></script>
+    <script src="/signalr/hubs"></script>
+
+    <script type="text/javascript">
+
+        var chat;
+
+        $(function () {
+            $.connection.hub.logging = true;
+            chat = $.connection.Chat; // Reference the ChatHub
+            chat.client.newMessage = onNewMessage;
+
+
+            $('#join').click(onJoin);
+            $('#send').click(onSend);
+            $('#sendPrivate').click(onSendPrivate);
+
+            $.connection.hub.start();
+        });
+
+        function onNewMessage(message) {
+            // ... Do validation!!!
+            $('#messages').append('<li>' + message + '</li>');
+        };
+
+        function onJoin() {
+            chat.server.joinRoom($('#room').val());
+        };
+
+        function onSend() {
+            chat.server.sendMessage($('#messageTextBox').val());
+        };
+
+        function onSendPrivate() {
+            chat.server.sendMessageToRoom($('#room').val(), $('#messageTextBox').val());
+        };
+
+        $.connection.hub.error(function (err) { });
+        
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Chat</h1>
+
+        Room:
+        <div class="row">
+            <div class="col-lg-8"><input type="text" id="room" placeholder="Room..."/>
+            </div>
+            <div class="col-lg-4"><input id="join" type="button" value="Join"/>
+            </div>
+        </div>
+
+        Message:
+        <div><input type="text" id="messageTextBox" placeholder="Message..."/></div>
+        <input type="button" id="send" value="send"/>
+        <input type="button" id="sendPrivate" value="Send Private"/>
+        <ul id="messages">
+            
+        </ul>
+    </div>
+</body>
+</html>
